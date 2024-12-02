@@ -1,0 +1,38 @@
+replicaCount: 2
+
+image:
+  repository: curteanucristian/react-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: react-app.local
+      paths:
+        - /
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - react-app.local
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
