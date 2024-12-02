@@ -5,6 +5,9 @@ image:
   pullPolicy: IfNotPresent
   tag: "latest"
 
+serviceAccount:
+  create: false
+
 service:
   type: ClusterIP
   port: 80
