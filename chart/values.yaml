@@ -1,41 +1,26 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
-  repository: curteanucristian/react-app
-  pullPolicy: IfNotPresent
+  repository: "docker.io/username/myreactapp"
   tag: "latest"
-
-serviceAccount:
-  create: false
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
   port: 80
+  targetPort: 3000
+
+resources: {}
 
 ingress:
   enabled: true
+  className: "nginx"
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  hosts:
-    - host: example.com
-      paths:
-        - /
-
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - application.local
-
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+  host: "react.example.com"
+  path: "/"
+  pathType: "Prefix"
+  tls:
+    enabled: true
+    secretName: "react-boilerplate-tls"

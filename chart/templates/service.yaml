@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: { { include "application.fullname" . } }
-  labels: { { - include "application.labels" . | nindent 4 } }
+  name: { { include "react-boilerplate.fullname" . } }
+  labels:
+    app.kubernetes.io/name: { { include "react-boilerplate.name" . } }
+    app.kubernetes.io/instance: { { .Release.Name } }
 spec:
   type: { { .Values.service.type } }
-  ports:
-    - port: { { .Values.service.port } }
-      targetPort: 80
-      protocol: TCP
-      name: http
   selector:
-    app.kubernetes.io/name: { { include "application.name" . } }
+    app.kubernetes.io/name: { { include "react-boilerplate.name" . } }
     app.kubernetes.io/instance: { { .Release.Name } }
+  ports:
+    - name: http
+      port: { { .Values.service.port } }
+      targetPort: { { .Values.service.targetPort } }

@@ -2,33 +2,34 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "application.fullname" . }}
+  name: {{ include "react-boilerplate.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "react-boilerplate.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
   annotations:
-    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className | quote }}
+  {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host }}
+    - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ . | quote }}
-            pathType: Prefix
+          - path: {{ .Values.ingress.path | quote }}
+            pathType: {{ .Values.ingress.pathType }}
             backend:
               service:
-                name: {{ include "application.fullname" . }}
+                name: {{ include "react-boilerplate.fullname" . }}
                 port:
-                  number: {{ $.Values.service.port }}
-          {{- end }}
-    {{- end }}
-  {{- if .Values.ingress.tls }}
+                  number: {{ .Values.service.port }}
+  {{- if and .Values.ingress.tls.enabled .Values.ingress.tls.secretName }}
   tls:
-    {{- range .Values.ingress.tls }}
-    - secretName: {{ .secretName }}
-      hosts:
-        {{- range .hosts }}
-        - {{ . }}
-        {{- end }}
-    {{- end }}
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName | quote }}
   {{- end }}
 {{- end }}
