@@ -12,7 +12,7 @@ spec:
       http:
         paths:
           {{- range .paths }}
-          - path: {{ .path }}
+          - path: {{ . | quote }}
             pathType: Prefix
             backend:
               service:
